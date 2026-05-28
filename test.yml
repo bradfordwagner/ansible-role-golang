@@ -13,6 +13,15 @@
       vars:
         go_version: "1.25"
 
+    - name: tree go version install dirs
+      ansible.builtin.shell: find /usr/local -maxdepth 1 -type d -name 'go-*' | sort | xargs -I{} sh -c 'echo "=== {} ==="; find {} -maxdepth 1 | sort; echo'
+      register: _tree_go_dirs
+      changed_when: false
+
+    - name: show go version install dirs
+      ansible.builtin.debug:
+        msg: "{{ _tree_go_dirs.stdout_lines }}"
+
     - name: ls -lh /usr/local
       ansible.builtin.command: ls -lh /usr/local
       register: _ls_usr_local

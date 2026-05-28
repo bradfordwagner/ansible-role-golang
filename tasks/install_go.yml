@@ -49,6 +49,21 @@
         path: "/tmp/go-extract-{{ go_resolved_version }}"
         state: absent
 
+    - name: find non-bin entries in go install dir
+      ansible.builtin.find:
+        paths: "{{ go_install_path }}"
+        file_type: any
+        excludes:
+          - bin
+      register: _go_extra_entries
+
+    - name: remove non-bin entries from go install dir to pass security scans
+      become: true
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ _go_extra_entries.files }}"
+
 - name: symlink go into {{ go_bin_dir }}
   become: true
   ansible.builtin.file:
