@@ -54,6 +54,13 @@ The role SHALL create symlinks in `go_bin_dir` for all executables found in `{{ 
 - **WHEN** `go version` is run without specifying `/usr/local/bin/go`
 - **THEN** the command succeeds, confirming `go_bin_dir` is on PATH
 
+### Requirement: Role metadata and README are accurate
+`meta/main.yml` SHALL have `role_name: golang`, a meaningful description, and relevant galaxy tags. `README.md` SHALL include a link to the Ansible Galaxy role page and a usage example.
+
+#### Scenario: Galaxy metadata is accurate
+- **WHEN** the role is published to Ansible Galaxy
+- **THEN** the role page shows the correct name, description, and tags (not template placeholder text)
+
 ### Requirement: config.yaml matches reference build matrix
 `config.yaml` SHALL be updated to match the reference from `ansible-role-qq`: build matrix includes `archlinux_latest` (amd64 only), `debian_bookworm`, `debian_bookworm-slim`, `debian_trixie`, `debian_trixie-slim`, `ubuntu_noble`, `ubuntu_plucky` (amd64 + arm64 each). `upstream.tag` SHALL be `6.3.1`. `target_repo` SHALL be `ghcr.io/bradfordwagner/ansible-role-golang`.
 

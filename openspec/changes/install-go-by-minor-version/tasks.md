@@ -24,7 +24,11 @@
 - [x] 4.2 Symlink `{{ go_install_path }}/bin/go` into `go_bin_dir` with `force: true`
 - [x] 4.3 Symlink `{{ go_install_path }}/bin/gofmt` into `go_bin_dir` with `force: true`
 
-## 5. Role Configuration
+## 5. Role Metadata and Documentation
+
+- [x] 5.0 Update `meta/main.yml` with correct `role_name`, description, and galaxy tags; update `README.md` with Galaxy link and usage example
+
+
 
 - [x] 5.1 Update `config.yaml`: set `target_repo: ghcr.io/bradfordwagner/ansible-role-golang`, update `upstream.tag` to `6.3.1`, and replace build matrix with: `archlinux_latest` (amd64), `debian_bookworm`, `debian_bookworm-slim`, `debian_trixie`, `debian_trixie-slim`, `ubuntu_noble`, `ubuntu_plucky` (amd64 + arm64 each)
 

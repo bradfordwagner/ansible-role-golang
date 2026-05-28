@@ -1,11 +1,10 @@
 galaxy_info:
-  role_name: gh_template
-  author: Bradford Wagner
-  description: gh template for a galaxy role it isn't useful
-  company: Blackrock Financial Management
+  role_name: golang
+  author: bradfordwagner
+  description: Installs Go by minor version, auto-resolving the latest stable patch release with checksum verification
   license: Apache-2.0
   min_ansible_version: 2.1
-  galaxy_tags: [smoketest]
+  galaxy_tags: [golang, go, install]
 
 dependencies:
   - andrewrothstein.unarchivedeps
