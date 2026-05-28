@@ -27,11 +27,11 @@ The role SHALL download the resolved Go tarball using the URL from the downloads
 - **THEN** the role fails with an error and does not extract the tarball
 
 ### Requirement: Install Go into versioned directory
-The role SHALL extract the verified tarball into `{{ go_root_dir }}/go-{{ go_resolved_version }}` (e.g., `/usr/local/go-1.26.3`). After installation, all content except `bin/` SHALL be removed (see `remove-src` capability). The versioned directory SHALL contain only `bin/go` and `bin/gofmt`.
+The role SHALL extract the verified tarball into `{{ go_root_dir }}/go-{{ go_resolved_version }}` (e.g., `/usr/local/go-1.26.3`). After installation, all content except `bin/` and `pkg/tool/` SHALL be removed (see `remove-src` capability).
 
 #### Scenario: Go installed into versioned path
 - **WHEN** the tarball is extracted and post-install cleanup completes
-- **THEN** `{{ go_root_dir }}/go-{{ go_resolved_version }}/bin/go` exists and is executable, and no other top-level entries remain
+- **THEN** `{{ go_root_dir }}/go-{{ go_resolved_version }}/bin/go` exists and is executable, only `bin/` and `pkg/tool/` remain in the versioned directory
 
 ### Requirement: Symlink Go binaries into go_bin_dir
 The Go distribution provides exactly two binaries in `bin/`: `go` and `gofmt`. The role SHALL create symlinks for both in `go_bin_dir`, pointing into the versioned install directory. Existing symlinks SHALL be replaced (`force: true`).
