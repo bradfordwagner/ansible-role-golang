@@ -1,0 +1,80 @@
+---
+- name: fetch go stable releases
+  ansible.builtin.uri:
+    url: "https://go.dev/dl/?mode=json"
+    return_content: true
+  register: _go_releases_raw
+
+- name: parse go stable releases
+  ansible.builtin.set_fact:
+    _go_releases: "{{ _go_releases_raw.content | from_json }}"
+
+- name: set version prefix for filtering
+  ansible.builtin.set_fact:
+    _go_version_prefix: "go{{ go_version }}."
+
+- name: filter releases matching go{{ go_version }}.x
+  ansible.builtin.set_fact:
+    _go_matching_releases: >-
+      {{ _go_releases
+         | selectattr('version', 'match', _go_version_prefix | regex_escape)
+         | list }}
+
+- name: fail if no stable release found for go{{ go_version }}
+  ansible.builtin.fail:
+    msg: "No stable release found for Go {{ go_version }}. Verify the version exists at https://go.dev/dl/"
+  when: _go_matching_releases | length == 0
+
+- name: set resolved release to latest patch
+  ansible.builtin.set_fact:
+    _go_resolved_release: "{{ _go_matching_releases | first }}"
+
+- name: fail if resolved version is a release candidate
+  ansible.builtin.fail:
+    msg: >-
+      Resolved version {{ _go_resolved_release.version }} is a release candidate.
+      RC versions are not supported. Use a stable minor version.
+  when: "'rc' in _go_resolved_release.version"
+
+- name: fail if resolved version is a beta release
+  ansible.builtin.fail:
+    msg: >-
+      Resolved version {{ _go_resolved_release.version }} is a beta release.
+      Beta versions are not supported. Use a stable minor version.
+  when: "'beta' in _go_resolved_release.version"
+
+- name: set go_resolved_version fact
+  ansible.builtin.set_fact:
+    go_resolved_version: "{{ _go_resolved_release.version | regex_replace('^go', '') }}"
+
+- name: fail if ansible_architecture is not in go_arch_map
+  ansible.builtin.fail:
+    msg: >-
+      Unsupported architecture: {{ ansible_architecture }}.
+      Add it to go_arch_map in defaults/main.yml.
+  when: ansible_architecture not in go_arch_map
+
+- name: set target os and arch facts
+  ansible.builtin.set_fact:
+    _go_os: "{{ ansible_system | lower }}"
+    _go_arch: "{{ go_arch_map[ansible_architecture] }}"
+
+- name: select release asset for {{ ansible_system }}/{{ ansible_architecture }}
+  ansible.builtin.set_fact:
+    _go_release_file: >-
+      {{ _go_resolved_release.files
+         | selectattr('os', 'equalto', _go_os)
+         | selectattr('arch', 'equalto', _go_arch)
+         | selectattr('kind', 'equalto', 'archive')
+         | list | first | default('') }}
+
+- name: fail if no release asset found for {{ _go_os }}/{{ _go_arch }}
+  ansible.builtin.fail:
+    msg: "No release asset found for Go {{ go_resolved_version }} on {{ _go_os }}/{{ _go_arch }}."
+  when: _go_release_file == ''
+
+- name: register download facts
+  ansible.builtin.set_fact:
+    _go_download_url: "https://dl.google.com/go/{{ _go_release_file.filename }}"
+    _go_download_sha256: "{{ _go_release_file.sha256 }}"
+    _go_download_filename: "{{ _go_release_file.filename }}"

@@ -1,11 +1,44 @@
 ---
 - hosts: localhost
-  roles:
-    - role: '{{ playbook_dir }}'
-      abc_ver: 1.0.1
   tasks:
-    - command: /usr/local/bin/abc
-      register: abc_test_output
-    - name: assert binary prints help output
-      debug:
-        msg: '{{ abc_test_output.stdout }}'
+    - name: install go 1.26
+      ansible.builtin.include_role:
+        name: '{{ playbook_dir }}'
+      vars:
+        go_version: "1.26"
+
+    - name: install go 1.25
+      ansible.builtin.include_role:
+        name: '{{ playbook_dir }}'
+      vars:
+        go_version: "1.25"
+
+    - name: ls -lh /usr/local
+      ansible.builtin.command: ls -lh /usr/local
+      register: _ls_usr_local
+      changed_when: false
+
+    - name: show /usr/local
+      ansible.builtin.debug:
+        msg: "{{ _ls_usr_local.stdout_lines }}"
+
+    - name: ls -lh /usr/local/bin
+      ansible.builtin.command: ls -lh /usr/local/bin
+      register: _ls_usr_local_bin
+      changed_when: false
+
+    - name: show /usr/local/bin
+      ansible.builtin.debug:
+        msg: "{{ _ls_usr_local_bin.stdout_lines }}"
+
+    - name: verify go version via PATH
+      ansible.builtin.command: go version
+      register: go_version_output
+      changed_when: false
+
+    - name: assert go1.25 is the active linked version
+      ansible.builtin.assert:
+        that:
+          - "'go1.25' in go_version_output.stdout"
+        fail_msg: "Expected go1.25.x to be active, got: {{ go_version_output.stdout }}"
+        success_msg: "go version confirmed: {{ go_version_output.stdout }}"

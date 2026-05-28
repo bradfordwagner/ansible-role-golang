@@ -1,0 +1,66 @@
+---
+- name: set versioned install path
+  ansible.builtin.set_fact:
+    go_install_path: "{{ go_root_dir }}/go-{{ go_resolved_version }}"
+
+- name: check if go {{ go_resolved_version }} is already installed
+  ansible.builtin.stat:
+    path: "{{ go_install_path }}/bin/go"
+  register: _go_binary_stat
+  changed_when: false
+
+- name: download and install go {{ go_resolved_version }}
+  when: not _go_binary_stat.stat.exists
+  become: true
+  block:
+    - name: download go {{ go_resolved_version }} tarball
+      ansible.builtin.get_url:
+        url: "{{ _go_download_url }}"
+        dest: "/tmp/{{ _go_download_filename }}"
+        checksum: "sha256:{{ _go_download_sha256 }}"
+        mode: "0644"
+
+    - name: create temp extraction directory
+      ansible.builtin.file:
+        path: "/tmp/go-extract-{{ go_resolved_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: extract go {{ go_resolved_version }} tarball
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ _go_download_filename }}"
+        dest: "/tmp/go-extract-{{ go_resolved_version }}"
+        remote_src: true
+
+    - name: install go {{ go_resolved_version }} to {{ go_install_path }}
+      ansible.builtin.command:
+        cmd: mv "/tmp/go-extract-{{ go_resolved_version }}/go" "{{ go_install_path }}"
+
+  always:
+    - name: remove downloaded tarball
+      become: true
+      ansible.builtin.file:
+        path: "/tmp/{{ _go_download_filename }}"
+        state: absent
+
+    - name: remove temp extraction directory
+      become: true
+      ansible.builtin.file:
+        path: "/tmp/go-extract-{{ go_resolved_version }}"
+        state: absent
+
+- name: symlink go into {{ go_bin_dir }}
+  become: true
+  ansible.builtin.file:
+    src: "{{ go_install_path }}/bin/go"
+    dest: "{{ go_bin_dir }}/go"
+    state: link
+    force: true
+
+- name: symlink gofmt into {{ go_bin_dir }}
+  become: true
+  ansible.builtin.file:
+    src: "{{ go_install_path }}/bin/gofmt"
+    dest: "{{ go_bin_dir }}/gofmt"
+    state: link
+    force: true
