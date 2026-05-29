@@ -49,17 +49,26 @@
         path: "/tmp/go-extract-{{ go_resolved_version }}"
         state: absent
 
-    - name: remove security-flagged files from go src dir
+    - name: remove test and pem files from go src dir
       become: true
       ansible.builtin.command:
-        cmd: find "{{ go_install_path }}/src" \( -name "*test*.go" -o -name "*.pem" \) -print -delete
-      register: _go_src_cleanup
-      changed_when: _go_src_cleanup.stdout != ""
+        cmd: find "{{ go_install_path }}/src" \( -name "*_test.go" -o -name "*.pem" \) -print -delete
+      register: _go_src_test_cleanup
+      changed_when: _go_src_test_cleanup.stdout != ""
+      when: go_src_cleanup_enabled
 
-    - name: show deleted security-flagged files
+    - name: show deleted test and pem files
       ansible.builtin.debug:
-        msg: "{{ _go_src_cleanup.stdout_lines }}"
-      when: _go_src_cleanup.stdout != ""
+        msg: "{{ _go_src_test_cleanup.stdout_lines }}"
+      when: go_src_cleanup_enabled and _go_src_test_cleanup.stdout != ""
+
+    - name: remove manually specified files from go install dir
+      become: true
+      ansible.builtin.file:
+        path: "{{ go_install_path }}/{{ item }}"
+        state: absent
+      loop: "{{ go_src_cleanup_extra_files }}"
+      when: go_src_cleanup_extra_files | length > 0
 
 - name: symlink go into {{ go_bin_dir }}
   become: true
