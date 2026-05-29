@@ -1,4 +1,6 @@
-### Requirement: Strip security-flagged files from Go install src/ after installation
+## MODIFIED Requirements
+
+### Requirement: Strip security-flagged files from Go install dir after installation
 After installing Go to `{{ go_install_path }}`, the role SHALL remove all files matching `*_test.go` or `*.pem` recursively under `{{ go_install_path }}/src/`. No top-level directories SHALL be removed; no entries inside `pkg/` SHALL be removed. The full Go install layout is preserved except for the targeted file types.
 
 Retained: all top-level entries (`bin/`, `pkg/`, `src/`, `api/`, `doc/`, `lib/`, `misc/`, `test/`, etc.), all `pkg/` contents
