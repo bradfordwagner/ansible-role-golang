@@ -12,6 +12,6 @@
 
 ## 3. Verify
 
-- [ ] 3.1 Run `task -t /Users/bwagner/.taskfiles/tasks/ansible_role.yml local_container` and confirm `go version` succeeds
-- [ ] 3.2 Confirm no `*_test.go` or `*.pem` files exist under the install dir's `src/` in the test output
-- [ ] 3.3 Confirm `src/`, `api/`, `doc/`, and other top-level dirs are present in the directory listing
+- [x] 3.1 Run `task -t /Users/bwagner/.taskfiles/tasks/ansible_role.yml local_container` and confirm `go version` succeeds
+- [x] 3.2 Confirm no `*_test.go` or `*.pem` files exist under the install dir's `src/` in the test output
+- [x] 3.3 Confirm `src/`, `api/`, `doc/`, and other top-level dirs are present in the directory listing
