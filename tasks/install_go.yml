@@ -49,36 +49,17 @@
         path: "/tmp/go-extract-{{ go_resolved_version }}"
         state: absent
 
-    - name: find non-essential top-level entries in go install dir
-      ansible.builtin.find:
-        paths: "{{ go_install_path }}"
-        file_type: any
-        excludes:
-          - bin
-          - pkg
-      register: _go_extra_entries
-
-    - name: remove non-essential top-level entries from go install dir to pass security scans
+    - name: remove security-flagged files from go src dir
       become: true
-      ansible.builtin.file:
-        path: "{{ item.path }}"
-        state: absent
-      loop: "{{ _go_extra_entries.files }}"
+      ansible.builtin.command:
+        cmd: find "{{ go_install_path }}/src" \( -name "*_test.go" -o -name "*.pem" \) -print -delete
+      register: _go_src_cleanup
+      changed_when: _go_src_cleanup.stdout != ""
 
-    - name: find non-tool entries in go pkg dir
-      ansible.builtin.find:
-        paths: "{{ go_install_path }}/pkg"
-        file_type: any
-        excludes:
-          - tool
-      register: _go_pkg_extra_entries
-
-    - name: remove non-tool entries from go pkg dir to pass security scans
-      become: true
-      ansible.builtin.file:
-        path: "{{ item.path }}"
-        state: absent
-      loop: "{{ _go_pkg_extra_entries.files }}"
+    - name: show deleted security-flagged files
+      ansible.builtin.debug:
+        msg: "{{ _go_src_cleanup.stdout_lines }}"
+      when: _go_src_cleanup.stdout != ""
 
 - name: symlink go into {{ go_bin_dir }}
   become: true
