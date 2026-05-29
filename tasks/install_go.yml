@@ -52,7 +52,7 @@
     - name: remove security-flagged files from go src dir
       become: true
       ansible.builtin.command:
-        cmd: find "{{ go_install_path }}/src" \( -name "*_test.go" -o -name "*.pem" \) -print -delete
+        cmd: find "{{ go_install_path }}/src" \( -name "*test*.go" -o -name "*.pem" \) -print -delete
       register: _go_src_cleanup
       changed_when: _go_src_cleanup.stdout != ""
 
