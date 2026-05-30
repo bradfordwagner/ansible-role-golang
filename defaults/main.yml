@@ -24,11 +24,12 @@ go_arch_map:
 # go_src_cleanup_enabled: enable post-install cleanup of security-flagged files
 # from the Go install src/ directory. When true, removes all *_test.go and *.pem
 # files, and any .go files containing embedded PEM certificate headers.
-go_src_cleanup_enabled: true
+go_src_cleanup_enabled: false
 
 # go_src_cleanup_extra_files: list of additional paths to delete after install,
 # relative to go_install_path. Use for surgical removal of specific files or
 # directories that security scanners flag (e.g. testcert.go, internal/synctest).
+# Only applied when go_src_cleanup_enabled is true.
 go_src_cleanup_extra_files:
   - src/net/http/internal/testcert/testcert.go
   - src/crypto/x509/x509_test_import.go

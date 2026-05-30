@@ -68,7 +68,7 @@
         path: "{{ go_install_path }}/{{ item }}"
         state: absent
       loop: "{{ go_src_cleanup_extra_files }}"
-      when: go_src_cleanup_extra_files | length > 0
+      when: go_src_cleanup_enabled and go_src_cleanup_extra_files | length > 0
 
 - name: symlink go into {{ go_bin_dir }}
   become: true
