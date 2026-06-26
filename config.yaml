@@ -1,19 +1,19 @@
 target_repo: ghcr.io/bradfordwagner/ansible-role-golang
 flavor: ansible_role
 builds:
-    - os: debian_bookworm
-      archs:
-        - linux/amd64
-        - linux/arm64
-    - os: debian_bookworm-slim
-      archs:
-        - linux/amd64
-        - linux/arm64
     - os: debian_trixie
       archs:
         - linux/amd64
         - linux/arm64
     - os: debian_trixie-slim
+      archs:
+        - linux/amd64
+        - linux/arm64
+    - os: debian_forky
+      archs:
+        - linux/amd64
+        - linux/arm64
+    - os: debian_forky-slim
       archs:
         - linux/amd64
         - linux/arm64
@@ -25,9 +25,13 @@ builds:
       archs:
         - linux/amd64
         - linux/arm64
+    - os: ubuntu_questing
+      archs:
+        - linux/amd64
+        - linux/arm64
     - os: archlinux_latest
       archs:
         - linux/amd64
 upstream:
     repo: ghcr.io/bradfordwagner/ansible
-    tag: 6.3.1
+    tag: 6.4.0
