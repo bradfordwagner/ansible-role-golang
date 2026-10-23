@@ -1,6 +1,7 @@
 ---
 # go_version: the Go major.minor version line to install (e.g., "1.26").
 # The role resolves the latest stable patch release for this minor version automatically.
+# renovate: datasource=golang-version depName=go versioning=loose extractVersion=^(?<version>\d+\.\d+)
 go_version: "1.27"
 
 # go_root_dir: base directory for versioned Go installations.
