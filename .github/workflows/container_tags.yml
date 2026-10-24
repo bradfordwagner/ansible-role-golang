@@ -19,7 +19,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ./bin/dagger
-          key: dagger-0.15.2-${{ runner.os }}-${{ runner.arch }}
+          key: dagger-0.21.11-${{ runner.os }}-${{ runner.arch }}
       - name: dagger=0.21.11
         if: ${{ steps.cache-dagger.outputs.cache-hit != 'true' }}
         run: |
@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ./bin/dagger
-          key: dagger-0.15.2-${{ runner.os }}-${{ runner.arch }}
+          key: dagger-0.21.11-${{ runner.os }}-${{ runner.arch }}
       - name: dagger=0.21.11
         if: ${{ steps.cache-dagger.outputs.cache-hit != 'true' }}
         run: |
