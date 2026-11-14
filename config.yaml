@@ -1,4 +1,3 @@
-target_repo: ghcr.io/bradfordwagner/ansible-role-golang
 flavor: ansible_role
 builds:
     - os: debian_bookworm
